@@ -1,36 +1,27 @@
-// import ContactItem from 'components/ContactItem/ContactItem';
 import { showErrorMessage } from 'components/Notification';
 import { List, DeleteBtn, ListItem } from './ContactList.styled';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteContact } from 'redux/contactsSlice';
-import { getContacts, getFilter } from 'redux/selectors';
-
-const getVisibleContacts = (contacts, filter) => {
-    return contacts?.filter(contact => contact.name.toLowerCase().includes(filter.toLowerCase()));
-};
+import { selectVisibleContacts } from 'redux/selectors';
+import { DeleteContact } from 'redux/operations';
 
 const ContactList = () => {
     const dispatch = useDispatch();
-    const contacts = useSelector(getContacts);
-    // console.log(contacts);
-    const filter = useSelector(getFilter);
-  
- 
-    const visibleContacts = getVisibleContacts(contacts, filter);
+    const contacts = useSelector(selectVisibleContacts);
 
-    const onDeleteContact = (id, name) => {
-        dispatch(deleteContact(id));
-        showErrorMessage(`You have deleted a contact "${name}"`);
+    const onDeleteContact = (id) => {
+        console.log(id);
+        dispatch(DeleteContact(id));
+        showErrorMessage(`You have deleted a contact`);
     };
-
+    
     return (
     <List>
-            {visibleContacts?.map(contact =>
+            {contacts?.map(contact =>
             (
                 <li key={contact.id}>
                     <ListItem>
-                        <p>{contact.name}: {contact.number}</p>
+                        <p>{contact.name}: {contact.phone}</p>
                         <DeleteBtn type="button" onClick={() => onDeleteContact(contact.id)}>Delete</DeleteBtn>
                     </ListItem>
                 </li>
@@ -43,7 +34,7 @@ ContactList.propTypes = {
     contacts: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
-        number: PropTypes.string.isRequired
+        phone: PropTypes.string.isRequired
     })),
     onDeleteContact: PropTypes.func,
 }
